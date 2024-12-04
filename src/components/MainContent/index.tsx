@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Dashboard from '@/features/dashboard';
+import Insights from '@/features/insights';
 
 const ThreeTabNavigation = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -16,7 +17,7 @@ const ThreeTabNavigation = () => {
         {/* Tab Navigation */}
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="insights">Insights</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -29,10 +30,10 @@ const ThreeTabNavigation = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="analytics" className="mt-4">
+        <TabsContent value="insights" className="mt-4">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4">Analytics</h2>
-            <p>Dive deep into your data and performance metrics.</p>
+            <h2 className="text-2xl font-bold mb-4">Insights</h2>
+            <Insights /> 
           </div>
         </TabsContent>
 
