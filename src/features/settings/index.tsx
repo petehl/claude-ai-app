@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Upload, Database, FileDown } from 'lucide-react';
+import { useColorScheme } from '@/providers/ColorSchemeProvider';
 
 interface DataSource {
     id: string;
@@ -19,11 +20,13 @@ interface Profile {
 }
 
 const SettingsTab = () => {
+  const { selectedScheme, setSelectedScheme, colorSchemes } = useColorScheme();
   const [profile, setProfile] = useState<Profile>({
     name: 'John Doe',
     email: 'john.doe@example.com',
     avatar: null
   });
+
 
   const [dataSources, setDataSources] = useState<DataSource[]>([
     { id: 'google', name: 'Google Analytics', connected: false },
@@ -32,6 +35,10 @@ const SettingsTab = () => {
   ]);
 
   const [dataRetention, setDataRetention] = useState('6months');
+
+  const handleColorSchemeChange = (value: string) => {
+    setSelectedScheme(value);
+  };
 
   const handleProfileUpdate = (field: string, value: any) => {
     setProfile(prev => ({ ...prev, [field]: value }));
@@ -95,6 +102,36 @@ const SettingsTab = () => {
               </label>
               {profile.avatar && <span>{profile.avatar.name}</span>}
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4 mt-8">
+        <h3 className="text-lg font-medium">Chart Appearance</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Color Scheme</label>
+            <Select value={selectedScheme} onValueChange={handleColorSchemeChange}>
+      <SelectTrigger>
+        <SelectValue placeholder="Select color scheme" />
+      </SelectTrigger>
+      <SelectContent>
+        {colorSchemes.map((scheme) => (
+          <SelectItem key={scheme.name} value={scheme.name}>
+            {scheme.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            {colorSchemes.find(s => s.name === selectedScheme)?.colors.map((color, i) => (
+              <div
+                key={i}
+                className="w-6 h-6 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+            ))}
           </div>
         </div>
       </div>

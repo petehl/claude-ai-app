@@ -22,16 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-
-// Custom color palette
-const COLORS = [
-  '#0088FE',  // Blue
-  '#00C49F',  // Teal
-  '#FFBB28',  // Yellow
-  '#FF8042',  // Orange
-  '#8884D8',  // Purple
-  '#FF4D4D',  // Red
-]
+import { useColorScheme } from '@/providers/ColorSchemeProvider';
 
 // Mock Data Generation
 const generateUserCountryData = () => [
@@ -60,6 +51,9 @@ const generateMonthlyAppUsageData = () => [
 
 const Dashboard: React.FC = () => {
   // State for filters
+  const { selectedScheme, colorSchemes } = useColorScheme();
+  const currentColors = colorSchemes.find(s => s.name === selectedScheme)?.colors;
+
   const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const [selectedMonth, setSelectedMonth] = useState<string>('All')
 
@@ -205,7 +199,7 @@ const Dashboard: React.FC = () => {
                   {filteredCountryData.map((entry, index) => (
                     <Cell 
                       key={`cell-${entry.country}`} 
-                      fill={COLORS[index % COLORS.length]} 
+                      fill={currentColors[index % currentColors.length]} 
                     />
                   ))}
                 </Pie>
