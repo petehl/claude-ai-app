@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import Dashboard from '@/features/dashboard';
+// import Dashboard from '@/features/dashboard';
 
 const ThreeTabNavigation = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4">
       <Tabs 
         defaultValue="dashboard" 
         value={activeTab} 
@@ -25,7 +25,7 @@ const ThreeTabNavigation = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
             <p>Welcome to your main dashboard. Here you can view key metrics and overview.</p>
-           < Dashboard />
+           {/* < Dashboard /> */}
           </div>
         </TabsContent>
 
