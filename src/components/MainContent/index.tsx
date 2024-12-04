@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Dashboard from '@/features/dashboard';
 import Insights from '@/features/insights';
+import Settings from '@/features/settings';
 
 const ThreeTabNavigation = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -40,7 +41,7 @@ const ThreeTabNavigation = () => {
         <TabsContent value="settings" className="mt-4">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-4">Settings</h2>
-            <p>Configure your application preferences and account settings.</p>
+            <Settings />
           </div>
         </TabsContent>
       </Tabs>
