@@ -8,7 +8,8 @@ import {
   YAxis, 
   Tooltip, 
   Legend, 
-  ResponsiveContainer 
+  ResponsiveContainer, 
+  Cell
 } from 'recharts'
 import { 
   Select, 
@@ -18,6 +19,19 @@ import {
   SelectValue 
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { X } from "lucide-react"
+
+// Custom color palette
+const COLORS = [
+  '#0088FE',  // Blue
+  '#00C49F',  // Teal
+  '#FFBB28',  // Yellow
+  '#FF8042',  // Orange
+  '#8884D8',  // Purple
+  '#FF4D4D',  // Red
+]
 
 // Mock Data Generation
 const generateUserCountryData = () => [
@@ -46,19 +60,31 @@ const generateMonthlyAppUsageData = () => [
 
 const Dashboard: React.FC = () => {
   // State for filters
-  const [selectedCountry, setSelectedCountry] = useState<string>('All')
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const [selectedMonth, setSelectedMonth] = useState<string>('All')
 
   // Generate data
   const userCountryData = generateUserCountryData()
   const monthlyAppUsageData = generateMonthlyAppUsageData()
 
+  // Add country to selection
+  const handleAddCountry = (country: string) => {
+    if (!selectedCountries.includes(country)) {
+      setSelectedCountries([...selectedCountries, country])
+    }
+  }
+
+  // Remove country from selection
+  const handleRemoveCountry = (country: string) => {
+    setSelectedCountries(selectedCountries.filter(c => c !== country))
+  }
+
   // Filtered data logic
   const filteredCountryData = useMemo(() => {
-    return selectedCountry !== 'All'
-      ? userCountryData.filter(item => item.country === selectedCountry)
-      : userCountryData 
-  }, [selectedCountry])
+    return selectedCountries.length > 0
+      ? userCountryData.filter(item => selectedCountries.includes(item.country))
+      : userCountryData
+  }, [selectedCountries])
 
   const filteredMonthlyData = useMemo(() => {
     return selectedMonth !== 'All'
@@ -66,28 +92,58 @@ const Dashboard: React.FC = () => {
       : monthlyAppUsageData
   }, [selectedMonth])
 
+  // Calculate total users for selected countries
+  const totalSelectedUsers = useMemo(() => {
+    return filteredCountryData.reduce((sum, country) => sum + country.users, 0)
+  }, [filteredCountryData])
+
   return (
     <div className="space-y-6 p-4">
       <div className="flex space-x-4 mb-6">
         {/* Country Filter */}
         <div className="w-1/2">
+          <div className="mb-2 flex flex-wrap gap-2">
+            {selectedCountries.map(country => (
+              <Badge 
+                key={country} 
+                variant="secondary" 
+                className="flex items-center"
+              >
+                {country}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="ml-2 h-4 w-4"
+                  onClick={() => handleRemoveCountry(country)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </Badge>
+            ))}
+          </div>
           <Select 
-            onValueChange={(value) => setSelectedCountry(value)}
-            value={selectedCountry}
+            onValueChange={(value) => {
+              if (value && !selectedCountries.includes(value)) {
+                handleAddCountry(value)
+              }
+            }}
+            value=""
           >
             <SelectTrigger>
-              <SelectValue placeholder="Filter by Country" />
+              <SelectValue placeholder="Select Countries" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">All Countries</SelectItem>
-              {userCountryData.map(country => (
-                <SelectItem 
-                  key={country.country} 
-                  value={country.country}
-                >
-                  {country.country}
-                </SelectItem>
-              ))}
+              {userCountryData
+                .filter(country => !selectedCountries.includes(country.country))
+                .map(country => (
+                  <SelectItem 
+                    key={country.country} 
+                    value={country.country}
+                  >
+                    {country.country} ({country.users} users)
+                  </SelectItem>
+                ))
+              }
             </SelectContent>
           </Select>
         </div>
@@ -116,6 +172,15 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Total Users Display */}
+      {selectedCountries.length > 0 && (
+        <div className="mb-4 text-center">
+          <p className="text-xl font-semibold">
+            Total Users in Selected Countries: {totalSelectedUsers}
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-6">
         {/* User by Country Donut Chart */}
         <Card>
@@ -131,10 +196,19 @@ const Dashboard: React.FC = () => {
                   nameKey="country"
                   cx="50%"
                   cy="50%"
+                  innerRadius={60}  // Creates donut effect
                   outerRadius={100}
                   fill="#8884d8"
-                  label
-                />
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  // labelStyle={{ fontSize: '80%' }}
+                >
+                  {filteredCountryData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${entry.country}`} 
+                      fill={COLORS[index % COLORS.length]} 
+                    />
+                  ))}
+                </Pie>
                 <Tooltip />
                 <Legend />
               </PieChart>
